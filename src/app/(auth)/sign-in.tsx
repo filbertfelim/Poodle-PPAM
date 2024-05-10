@@ -1,12 +1,13 @@
 import { StyleSheet } from "react-native";
+import { Stack } from "expo-router";
+import EditScreenInfo from "@/components/EditScreenInfo";
+import { Text, View } from "@/components/Themed";
 
-import EditScreenInfo from "@/src/components/EditScreenInfo";
-import { Text, View } from "@/src/components/Themed";
-
-export default function TabOneScreen() {
+export default function SignIn() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
+      <Stack.Screen options={{ headerShown: false }} />
+      <Text style={styles.title}>Auth</Text>
       <View
         style={styles.separator}
         lightColor="#eee"
