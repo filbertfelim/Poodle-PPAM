@@ -1,7 +1,8 @@
-import supabase from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import {
   PropsWithChildren,
+  SetStateAction,
   createContext,
   useContext,
   useEffect,
@@ -15,6 +16,14 @@ type AuthData = {
   isSeeker: boolean;
 };
 
+type User = {
+  email: string;
+  name: string;
+  phone_number: string;
+  role: string;
+  user_id: string;
+};
+
 const AuthContext = createContext<AuthData>({
   session: null,
   loading: true,
@@ -24,31 +33,37 @@ const AuthContext = createContext<AuthData>({
 
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSession = async () => {
       const {
         data: { session },
+        error: sessionError,
       } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
 
       setSession(session);
 
       if (session) {
-        const { data } = await supabase
+        const { data: userData, error: userDataError } = await supabase
           .from("User")
           .select("*")
           .eq("user_id", session.user.id)
           .single();
-        setUser(data || null);
+        if (userDataError) throw userDataError;
+        setUser(userData);
+      } else {
+        setUser(null);
       }
-
       setLoading(false);
     };
 
     fetchSession();
-    supabase.auth.onAuthStateChange((_event, session) => {
+
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      fetchSession();
       setSession(session);
     });
   }, []);

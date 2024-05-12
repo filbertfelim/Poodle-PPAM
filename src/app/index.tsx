@@ -6,15 +6,13 @@ import { useAuth } from "@/providers/AuthProvider";
 const index = () => {
   const { session, loading, user, isSeeker } = useAuth();
 
-  //   if (loading) {
-  //     return <ActivityIndicator />;
-  //   }
+  // if (loading) {
+  //   return <ActivityIndicator />;
+  // }
 
   if (!session) {
     return <Redirect href={"/(auth)/sign-in"} />;
   }
-  console.log(user);
-  console.log(session);
 
   if (!isSeeker) {
     return <Redirect href={"/(seeker)"} />;
