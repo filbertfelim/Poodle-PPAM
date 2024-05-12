@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Image, Alert } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/providers/AuthProvider";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 
@@ -15,8 +14,6 @@ const SignInScreen: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>("");
 
   async function openGoogleSignIn() {
-    // Your Supabase URL for Google authentication
-
     const redirectUri = AuthSession.makeRedirectUri();
 
     const { data } = await supabase.auth.signInWithOAuth({
@@ -45,8 +42,8 @@ const SignInScreen: React.FC = () => {
           return acc;
         }, "");
 
-        const { data, error } = await supabase.auth.getUser(accessToken);
-        const { data: userData, error: userDataError } = await supabase
+        const { data } = await supabase.auth.getUser(accessToken);
+        const { error: userDataError } = await supabase
           .from("User")
           .select("*")
           .eq("user_id", data.user?.id)

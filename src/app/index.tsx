@@ -4,17 +4,17 @@ import { Link, Redirect } from "expo-router";
 import { useAuth } from "@/providers/AuthProvider";
 
 const index = () => {
-  const { session, loading, user, isSeeker } = useAuth();
+  const { session, loading, isSeeker } = useAuth();
 
-  // if (loading) {
-  //   return <ActivityIndicator />;
-  // }
+  if (loading) {
+    return <ActivityIndicator />;
+  }
 
   if (!session) {
     return <Redirect href={"/(auth)/sign-in"} />;
   }
 
-  if (!isSeeker) {
+  if (isSeeker) {
     return <Redirect href={"/(seeker)"} />;
   } else {
     return <Redirect href={"/(owner)"} />;

@@ -1,14 +1,10 @@
-import { Link, Stack, useRouter, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity, Image, Alert } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { TextInput, Button, Text, RadioButton } from "react-native-paper";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/providers/AuthProvider";
-import * as WebBrowser from "expo-web-browser";
-import * as AuthSession from "expo-auth-session";
 
 const SignUpDataScreen: React.FC = () => {
-  const router = useRouter();
   const params = useLocalSearchParams();
   const { access_token, refresh_token, user_id, email, name } = params;
 

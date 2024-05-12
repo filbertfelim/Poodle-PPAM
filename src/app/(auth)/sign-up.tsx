@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Image, Alert } from "react-native";
 import { TextInput, Button, RadioButton, Text } from "react-native-paper";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/providers/AuthProvider";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 
@@ -85,7 +84,6 @@ const SignupScreen: React.FC = () => {
     const authUrl = data.url || "";
 
     try {
-      // Attempt to open the web browser for auth and wait for the redirect to come back to the app
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
         redirectUri
@@ -109,7 +107,6 @@ const SignupScreen: React.FC = () => {
           .select("*")
           .eq("user_id", data.user?.id)
           .single();
-        console.log(JSON.stringify(data, undefined, 2));
         if (!userDataError) {
           Alert.alert("Email has already been registered!");
         } else {
