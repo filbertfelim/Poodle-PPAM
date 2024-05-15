@@ -19,7 +19,6 @@ type AuthData = {
 type User = {
   email: string;
   name: string;
-  phone_number: string;
   role: string;
   user_id: string;
 };
