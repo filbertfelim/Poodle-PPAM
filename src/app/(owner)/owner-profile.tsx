@@ -35,7 +35,7 @@ export default function OwnerProfile() {
   } else {
     return (
       <SafeAreaView style={styles.container}>
-        <Text variant="headlineLarge" style={styles.textHeader}>
+        <Text variant="headlineSmall" style={styles.textHeader}>
           Your Profile
         </Text>
         <ScrollView>
@@ -44,7 +44,7 @@ export default function OwnerProfile() {
           </View>
           <View style={styles.userInfoSection}>
             <List.Item
-              title={user.name}
+              title={user.id}
               contentStyle={styles.userInfoSection}
               description={user.email}
               titleStyle={styles.title}
@@ -97,11 +97,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    padding: 25,
   },
   textHeader: {
     textAlign: "center",
     fontFamily: "Inter",
     fontWeight: "bold",
+    marginTop: 25,
   },
   avatarIcon: {
     backgroundColor: "#471D67",

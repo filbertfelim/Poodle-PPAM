@@ -1,87 +1,130 @@
 import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
-
+import { Pressable, StyleSheet } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import { Text, BottomNavigation } from "react-native-paper";
+import { CommonActions } from "@react-navigation/native";
+import TabOneScreen from ".";
+import OwnerProfile from "./owner-profile";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import YourProjectScreen from "./your-project";
+import AddProjectScreen from "./add-project";
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+interface RouteParams {
+  key: string;
+  name: string;
+  params?: {
+    [key: string]: any;
+  };
+  state?: any;
+  title?: string;
 }
+
+const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
+    <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: useClientOnlyValue(false, true),
-        headerShadowVisible: false,
+        headerShown: false,
       }}
+      tabBar={({ navigation, state, descriptors, insets }) => (
+        <BottomNavigation.Bar
+          navigationState={state}
+          safeAreaInsets={insets}
+          style={{ backgroundColor: "#F8F7F9" }}
+          onTabPress={({ route, preventDefault }) => {
+            const event = navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!event.defaultPrevented) {
+              navigation.dispatch({
+                ...CommonActions.navigate(route.name, route.params),
+                target: state.key,
+              });
+            }
+          }}
+          renderIcon={({ route, focused, color }) => {
+            const { options } = descriptors[route.key] as any;
+            if (options.tabBarIcon) {
+              return options.tabBarIcon({
+                focused,
+                color: focused ? "#471D67" : "#777777",
+                size: 24,
+              });
+            }
+            return null;
+          }}
+          getLabelText={({ route }: { route: RouteParams }) => {
+            const { options } = descriptors[route.key] as any;
+            const label =
+              options.tabBarLabel !== undefined
+                ? options.tabBarLabel
+                : options.title !== undefined
+                ? options.title
+                : route.title;
+
+            return label;
+          }}
+        />
+      )}
     >
-      <Tabs.Screen
-        name="index"
+      <Tab.Screen
+        name="Project"
+        component={YourProjectScreen}
         options={{
-          title: "Your Projects",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="wpforms" color={color} />
-          ),
-          headerTitle: "",
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          tabBarLabel: "Project",
+          tabBarIcon: ({ color, size }) => (
+            <Icon
+              name="file-document-multiple-outline"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
-      <Tabs.Screen
-        name="owner-workspace"
+      <Tab.Screen
+        name="Workspace"
+        component={AddProjectScreen}
         options={{
-          title: "Workspaces",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="users-rectangle" color={color} />
-          ),
-          headerTitle: "",
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          tabBarLabel: "Workspace",
+          tabBarIcon: ({ color, size }) => (
+            <Icon
+              name="card-account-details-outline"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
-      <Tabs.Screen
-        name="owner-profile"
+      <Tab.Screen
+        name="Profile"
+        component={OwnerProfile}
         options={{
-          title: "Profile",
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-          headerTitle: "",
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="account-circle-outline" size={size} color={color} />
+          ),
         }}
       />
-    </Tabs>
+    </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+});
