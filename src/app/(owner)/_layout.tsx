@@ -8,10 +8,11 @@ import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { Text, BottomNavigation } from "react-native-paper";
 import { CommonActions } from "@react-navigation/native";
-import AddProjectScreen from "./add-project";
 import TabOneScreen from ".";
 import OwnerProfile from "./owner-profile";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import YourProjectScreen from "./your-project";
+import AddProjectScreen from "./add-project";
 
 interface RouteParams {
   key: string;
@@ -79,7 +80,7 @@ export default function TabLayout() {
     >
       <Tab.Screen
         name="Project"
-        component={TabOneScreen}
+        component={YourProjectScreen}
         options={{
           tabBarLabel: "Project",
           tabBarIcon: ({ color, size }) => (
