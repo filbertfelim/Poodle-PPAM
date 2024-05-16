@@ -3,10 +3,11 @@ import { View } from "@/components/Themed";
 import { Pressable, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 
 export default function YourProjectScreen() {
   const { user } = useAuth();
-  const router = useRouter();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -17,10 +18,10 @@ export default function YourProjectScreen() {
         <Pressable
           onPress={() => {
             console.log("Pressed!");
-            router.push("/add-project");
+            navigation.navigate("AddProject" as never);
           }}
         >
-          <Text style={styles.buttonText}>Add</Text>
+          <Text>Add</Text>
         </Pressable>
       </View>
     </View>

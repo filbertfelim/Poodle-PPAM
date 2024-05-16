@@ -6,7 +6,7 @@ import { Button, Text } from "react-native-paper";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "expo-router";
 
-export default function TabOneScreen() {
+export default function OwnerWorkspace() {
   const { session, loading, user, isSeeker } = useAuth();
   const router = useRouter();
 

@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Avatar, List, Divider } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 
 export default function OwnerProfile() {
   const { user } = useAuth();

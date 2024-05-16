@@ -1,18 +1,13 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome6";
-import { Link, Tabs } from "expo-router";
-import { Pressable, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
-import { Text, BottomNavigation } from "react-native-paper";
+import { BottomNavigation } from "react-native-paper";
 import { CommonActions } from "@react-navigation/native";
-import TabOneScreen from ".";
-import OwnerProfile from "./owner-profile";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import YourProjectScreen from "./your-project";
-import AddProjectScreen from "./add-project";
+import ProfileStackNavigator from "./profile/_layout";
+import ProjectsStackNavigator from "./project/_layout";
+import OwnerWorkspace from "./owner-workspace";
 
 interface RouteParams {
   key: string;
@@ -79,8 +74,8 @@ export default function TabLayout() {
       )}
     >
       <Tab.Screen
-        name="Project"
-        component={YourProjectScreen}
+        name="your-project"
+        component={ProjectsStackNavigator}
         options={{
           tabBarLabel: "Project",
           tabBarIcon: ({ color, size }) => (
@@ -93,8 +88,8 @@ export default function TabLayout() {
         }}
       />
       <Tab.Screen
-        name="Workspace"
-        component={AddProjectScreen}
+        name="owner-workspace"
+        component={OwnerWorkspace}
         options={{
           tabBarLabel: "Workspace",
           tabBarIcon: ({ color, size }) => (
@@ -107,8 +102,8 @@ export default function TabLayout() {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={OwnerProfile}
+        name="owner-profile"
+        component={ProfileStackNavigator}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }) => (

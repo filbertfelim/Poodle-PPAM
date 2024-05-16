@@ -1,9 +1,5 @@
 import React, { useCallback, useState } from "react";
-import {
-  StyleSheet,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { StyleSheet, ScrollView, Pressable } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { View } from "@/components/Themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
