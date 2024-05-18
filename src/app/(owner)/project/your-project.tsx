@@ -2,7 +2,6 @@ import { useAuth } from "@/providers/AuthProvider";
 import { View } from "@/components/Themed";
 import { Pressable, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
-import { Link, useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 
 export default function YourProjectScreen() {
