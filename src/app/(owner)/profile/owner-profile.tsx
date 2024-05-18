@@ -45,7 +45,7 @@ export default function OwnerProfile() {
           </View>
           <View style={styles.userInfoSection}>
             <List.Item
-              title={user.id}
+              title={user.name}
               contentStyle={styles.userInfoSection}
               description={user.email}
               titleStyle={styles.title}
