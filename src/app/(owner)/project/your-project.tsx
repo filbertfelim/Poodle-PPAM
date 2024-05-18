@@ -1,6 +1,6 @@
 import { useAuth } from "@/providers/AuthProvider";
 import { View } from "@/components/Themed";
-import { FlatList, Pressable, StyleSheet, RefreshControl } from "react-native";
+import { FlatList, Pressable, StyleSheet, RefreshControl, InteractionManager } from "react-native";
 import { Text } from "react-native-paper";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { supabase } from "@/lib/supabase";
@@ -46,9 +46,12 @@ export default function YourProjectScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (user?.user_id) {
-        getProjects(user.user_id);
-      }
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (user?.user_id) {
+          getProjects(user.user_id);
+        }
+      });
+      return () => task.cancel();
     }, [user?.user_id])
   );
 
@@ -79,6 +82,18 @@ export default function YourProjectScreen() {
       }}
     >
       <Text style={styles.projectTitle}>{item.project_title}</Text>
+      <View style={styles.statusWrapper}>
+        {item.project_status === "available" && (
+          <View style={styles.statusContainerAvailable}>
+          <Text style={styles.statusTextAvailable}>Available</Text>
+        </View>
+        )}
+        {item.project_status === "unavailable" && (
+          <View style={styles.statusContainerUnavailable}>
+          <Text style={styles.statusTextUnavailable}>Unvailable</Text>
+        </View>
+        )}
+      </View>
       <Text style={styles.projectFee}>
         <Text>Fee : </Text>
         <Text style={styles.numberFee}>{formatFee(item.project_fee)}</Text>
@@ -208,5 +223,38 @@ const styles = StyleSheet.create({
     lineHeight: 25,
     fontWeight: 'bold',
     color: '#471D67',
-  }
+  },
+  statusWrapper: {
+    alignItems: "flex-start",
+    marginVertical: 5,
+    justifyContent: "space-between",
+  },
+  statusContainerAvailable: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E0ECFD",
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 20,
+    justifyContent: "space-between",
+  },
+  statusTextAvailable: {
+    color: "#151970",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  statusContainerUnavailable: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFCBE",
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 20,
+    justifyContent: "space-between",
+  },
+  statusTextUnavailable: {
+    color: "#C67243",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
 });

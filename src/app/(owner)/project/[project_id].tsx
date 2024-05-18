@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Pressable, StyleSheet, ScrollView } from "react-native";
+import { View, Pressable, StyleSheet, ScrollView, InteractionManager } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
@@ -41,7 +41,10 @@ export default function ProjectDetails() {
 
   useFocusEffect(
     useCallback(() => {
-      getProjectById(Number(projectId));
+      const task = InteractionManager.runAfterInteractions(() => {
+        getProjectById(Number(projectId));
+      });
+      return () => task.cancel();
     }, [])
   );
 

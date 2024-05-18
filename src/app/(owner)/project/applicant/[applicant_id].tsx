@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Pressable, StyleSheet, Linking } from "react-native";
+import { View, Pressable, StyleSheet, Linking, InteractionManager } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
@@ -103,11 +103,14 @@ export default function ProjectApplicant() {
 
   useFocusEffect(
     useCallback(() => {
-      getApplication(Number(projectApplicant));
-      if (application?.seeker_id) {
-        getApplicant(application.seeker_id);
-        getSeeker(application.seeker_id);
-      }
+      const task = InteractionManager.runAfterInteractions(() => {
+        getApplication(Number(projectApplicant));
+        if (application?.seeker_id) {
+          getApplicant(application.seeker_id);
+          getSeeker(application.seeker_id);
+        }
+      });
+      return () => task.cancel();
     }, [])
   );
 
