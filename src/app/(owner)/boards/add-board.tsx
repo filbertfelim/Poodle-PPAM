@@ -105,13 +105,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    padding: 20,
+    padding: 18,
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 32,
     marginBottom: 20,
   },
   header: {
@@ -133,9 +133,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 15,
     paddingHorizontal: 0,
-  },
-  datePicker: {
-    height: 150,
   },
   button: {
     marginTop: 25,

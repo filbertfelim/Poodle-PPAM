@@ -7,6 +7,9 @@ import AddBoard from "./boards/add-board";
 import KanbanBoard from "./boards/kanban-board";
 import AddActivity from "./activity/add-activity";
 import EditActivity from "./activity/edit-activity";
+import ProjectDetails from "./project/[project_id]";
+import ProjectApplicant from "./project/applicant/[applicant_id]";
+import YourProjectScreen from "./project/your-project";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +25,20 @@ export default function TabLayout() {
         name="AddProject"
         component={AddProjectScreen}
         options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="ProjectDetails"
+        component={ProjectDetails}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ProjectApplicant"
+        component={ProjectApplicant}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="Boards"

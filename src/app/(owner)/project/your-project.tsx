@@ -4,7 +4,6 @@ import { FlatList, Pressable, SafeAreaView, StyleSheet } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 import {
   CommonActions,
-  useIsFocused,
   useNavigation,
 } from "@react-navigation/native";
 import { supabase } from "@/lib/supabase";
@@ -22,7 +21,6 @@ interface ProjectInterface {
 }
 
 export default function YourProjectScreen() {
-  const isFocused = useIsFocused();
   const { user } = useAuth();
   const navigation = useNavigation();
   const [projects, setProjects] = useState<ProjectInterface[]>([]);
@@ -86,9 +84,14 @@ export default function YourProjectScreen() {
             <Text style={styles.statusTextAvailable}>Available</Text>
           </View>
         )}
+        {item.project_status === "in review" && (
+          <View style={styles.statusContainerInReview}>
+            <Text style={styles.statusTextInReview}>In Review</Text>
+          </View>
+        )}
         {item.project_status === "unavailable" && (
           <View style={styles.statusContainerUnavailable}>
-            <Text style={styles.statusTextUnavailable}>Unvailable</Text>
+            <Text style={styles.statusTextUnavailable}>Unavailable</Text>
           </View>
         )}
       </View>
@@ -204,7 +207,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     padding: 15,
     borderRadius: 20,
-    marginVertical: 10,
+    marginVertical: 5,
     borderColor: "#ddd",
     borderWidth: 1,
     gap: 6,
@@ -242,7 +245,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   statusContainerAvailable: {
-    flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#E0ECFD",
     paddingHorizontal: 12,
@@ -255,8 +257,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
   },
-  statusContainerUnavailable: {
-    flexDirection: "row",
+  statusContainerInReview: {
     alignItems: "center",
     backgroundColor: "#FFFCBE",
     paddingHorizontal: 12,
@@ -264,8 +265,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "space-between",
   },
-  statusTextUnavailable: {
+  statusTextInReview: {
     color: "#C67243",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  statusContainerUnavailable: {
+    alignItems: "center",
+    backgroundColor: "#E6E6E6",
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 20,
+    justifyContent: "space-between",
+  },
+  statusTextUnavailable: {
+    color: "#646464",
     fontWeight: "bold",
     fontSize: 12,
   },

@@ -36,10 +36,6 @@ export default function AddProjectScreen() {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
 
-  const goBack = () => {
-    navigation.goBack();
-  };
-
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
   };
@@ -52,7 +48,7 @@ export default function AddProjectScreen() {
   const capitalizeWords = (sentence: string) => {
     return sentence
       .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
 
@@ -137,7 +133,7 @@ export default function AddProjectScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Pressable onPress={goBack}>
+        <Pressable onPress={() => navigation.goBack()}>
           <Icon name="chevron-left" color="#471D67" size={30} />
         </Pressable>
         <Text variant="headlineSmall" style={styles.header}>
@@ -255,13 +251,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    padding: 20,
+    padding: 18,
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 32,
     marginBottom: 20,
   },
   header: {
