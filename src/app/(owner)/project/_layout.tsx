@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomNavigation } from "react-native-paper";
 import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import OwnerWorkspace from "../owner-workspace";
 import YourProjectScreen from "../project/your-project";
 import OwnerProfile from "../profile/owner-profile";
+import Workspace from "../workspace/owner-workspace";
 
 interface RouteParams {
   key: string;
@@ -73,7 +73,7 @@ export default function ProjectTabs() {
         name="Projects"
         component={YourProjectScreen}
         options={{
-          tabBarLabel: "Project",
+          tabBarLabel: "Projects",
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="file-document-multiple-outline"
@@ -85,9 +85,9 @@ export default function ProjectTabs() {
       />
       <Tab.Screen
         name="Workspaces"
-        component={OwnerWorkspace}
+        component={Workspace}
         options={{
-          tabBarLabel: "Workspace",
+          tabBarLabel: "Workspaces",
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="card-account-details-outline"

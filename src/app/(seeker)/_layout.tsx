@@ -1,58 +1,59 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+import ProfileTabs from "./profile/_layout";
+import EditCV from "./profile/edit-cv";
+import EditPortfolio from "./profile/edit-portfolio";
+import Boards from "../(owner)/boards/boards";
+import AddBoard from "../(owner)/boards/add-board";
+import KanbanBoard from "../(owner)/boards/kanban-board";
+import AddActivity from "../(owner)/activity/add-activity";
+import EditActivity from "../(owner)/activity/edit-activity";
 
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+const Stack = createStackNavigator();
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: useClientOnlyValue(false, true),
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={ProfileTabs}
+        options={{ headerShown: false }}
       />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
+      <Stack.Screen
+        name="EditCV"
+        component={EditCV}
+        options={{ headerShown: false, presentation: "modal" }}
       />
-    </Tabs>
+      <Stack.Screen
+        name="EditPortfolio"
+        component={EditPortfolio}
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="Boards"
+        component={Boards}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddBoard"
+        component={AddBoard}
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="KanbanBoard"
+        component={KanbanBoard}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddActivity"
+        component={AddActivity}
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="EditActivity"
+        component={EditActivity}
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+    </Stack.Navigator>
   );
 }

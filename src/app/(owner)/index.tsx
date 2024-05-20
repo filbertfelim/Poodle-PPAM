@@ -20,7 +20,11 @@ export default function TabOneScreen() {
   }
 
   if (!user) {
-    return <View />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#471D67" />
+      </View>
+    );
   } else {
     navigation.navigate("ProjectTabs" as never);
   }
@@ -31,6 +35,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 20,

@@ -4,11 +4,13 @@ import { View } from "@/components/Themed";
 import { useAuth } from "@/providers/AuthProvider";
 import { Button, Text } from "react-native-paper";
 import { supabase } from "@/lib/supabase";
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 
 export default function TabOneScreen() {
   const { session, loading, user, isSeeker } = useAuth();
   const router = useRouter();
+  const navigation = useNavigation();
 
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
@@ -18,22 +20,13 @@ export default function TabOneScreen() {
   }
 
   if (!user) {
-    return <ActivityIndicator />;
-  } else {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>{user.name}</Text>
-        <Text style={styles.title}>{user.role}</Text>
-        <View
-          style={styles.separator}
-          lightColor="#eee"
-          darkColor="rgba(255,255,255,0.1)"
-        />
-        <Button mode="contained" onPress={handleLogout} style={styles.button}>
-          Log out
-        </Button>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#471D67" />
       </View>
     );
+  } else {
+    navigation.navigate("ProfileTabs" as never);
   }
 }
 
@@ -42,6 +35,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 20,

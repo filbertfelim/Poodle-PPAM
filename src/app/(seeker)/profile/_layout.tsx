@@ -3,9 +3,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomNavigation } from "react-native-paper";
 import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Workspace from "../workspace/owner-workspace";
-import YourProjectScreen from "../project/your-project";
-import OwnerProfile from "../profile/owner-profile";
+import SeekerProfile from "./seeker-profile";
+import Workspace from "@/app/(owner)/workspace/owner-workspace";
 
 interface RouteParams {
   key: string;
@@ -69,6 +68,16 @@ export default function ProfileTabs() {
         />
       )}
     >
+      {/* <Tab.Screen
+        name="Search"
+        component={YourProjectScreen}
+        options={{
+          tabBarLabel: "Search",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="search" size={size} color={color} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Projects"
         component={YourProjectScreen}
@@ -82,7 +91,7 @@ export default function ProfileTabs() {
             />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Workspaces"
         component={Workspace}
@@ -99,7 +108,7 @@ export default function ProfileTabs() {
       />
       <Tab.Screen
         name="Profile"
-        component={OwnerProfile}
+        component={SeekerProfile}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }) => (

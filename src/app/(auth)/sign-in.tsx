@@ -15,6 +15,7 @@ const SignInScreen: React.FC = () => {
 
   async function openGoogleSignIn() {
     const redirectUri = AuthSession.makeRedirectUri();
+    console.log(redirectUri);
 
     const { data } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -24,7 +25,6 @@ const SignInScreen: React.FC = () => {
     const authUrl = data.url || "";
 
     try {
-      // Attempt to open the web browser for auth and wait for the redirect to come back to the app
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
         redirectUri

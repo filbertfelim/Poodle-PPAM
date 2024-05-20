@@ -14,9 +14,10 @@ import { Avatar, List, Divider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-export default function OwnerProfile() {
+export default function SeekerProfile() {
   const { user } = useAuth();
   const router = useRouter();
+  const navigation = useNavigation();
 
   const [visible, setVisible] = React.useState(false);
 
@@ -54,6 +55,26 @@ export default function OwnerProfile() {
           </View>
           <Divider />
           <List.Section style={styles.actionSection}>
+            <List.Item
+              style={styles.actionSection}
+              titleStyle={styles.description}
+              title="CV"
+              left={() => <Icon name="file" color="#000" size={30} />}
+              right={() => <Icon name="chevron-right" color="#000" size={30} />}
+              onPress={() => {
+                navigation.navigate("EditCV" as never);
+              }}
+            />
+            <List.Item
+              style={styles.actionSection}
+              titleStyle={styles.description}
+              title="Portfolio"
+              left={() => <Icon name="web" color="#000" size={30} />}
+              right={() => <Icon name="chevron-right" color="#000" size={30} />}
+              onPress={() => {
+                navigation.navigate("EditPortfolio" as never);
+              }}
+            />
             <List.Item
               style={styles.actionSection}
               titleStyle={styles.description}

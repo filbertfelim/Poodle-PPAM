@@ -1,10 +1,16 @@
 import React, { useCallback, useState } from "react";
-import { StyleSheet, ScrollView, Pressable } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { View } from "@/components/Themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { supabase } from "@/lib/supabase";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "@/providers/AuthProvider";
 import moment from "moment-timezone";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -30,25 +36,24 @@ export default function AddProjectScreen() {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        setProject({
-          projectName: "",
-          deadline: "",
-          fee: "",
-          description: "",
-        });
-      };
-    }, [])
-  );
-
   const goBack = () => {
     navigation.goBack();
   };
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
+  };
+
+  const confirmIOSDate = () => {
+    handleChange("deadline", formatDate(date));
+    toggleDatePicker();
+  };
+
+  const capitalizeWords = (sentence: string) => {
+    return sentence
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
   };
 
   const formatDate = (rawDate: Date) => {
@@ -69,8 +74,10 @@ export default function AddProjectScreen() {
     if (type == "set") {
       const currentDate = selectedDate;
       setDate(currentDate);
-      toggleDatePicker();
-      handleChange("deadline", formatDate(currentDate));
+      if (Platform.OS === "android") {
+        toggleDatePicker();
+        handleChange("deadline", formatDate(currentDate));
+      }
     } else {
       toggleDatePicker();
     }
@@ -99,7 +106,7 @@ export default function AddProjectScreen() {
       const numericFee = project.fee.replace(/[^0-9]/g, "");
       const { data, error } = await supabase.from("Project").insert([
         {
-          project_title: project.projectName,
+          project_title: capitalizeWords(project.projectName),
           project_desc: project.description,
           project_deadline: isoDeadline,
           project_fee: numericFee,
@@ -114,6 +121,7 @@ export default function AddProjectScreen() {
         throw new Error(`Error posting project: ${errorMessage}`);
       }
       console.log("Project posted successfully:", data);
+      navigation.goBack();
       setProject({
         projectName: "",
         deadline: "",
@@ -155,7 +163,42 @@ export default function AddProjectScreen() {
               value={date}
               onChange={onChange}
               minimumDate={new Date()}
+              style={styles.datePicker}
             />
+          )}
+          {showPicker && Platform.OS === "ios" && (
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-evenly" }}
+            >
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: "#E6E6E6",
+                    paddingHorizontal: 15,
+                    paddingVertical: 6,
+                    marginTop: 0,
+                  },
+                ]}
+                onPress={toggleDatePicker}
+              >
+                <Text>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: "#E6E6E6",
+                    paddingHorizontal: 15,
+                    paddingVertical: 6,
+                    marginTop: 0,
+                  },
+                ]}
+                onPress={confirmIOSDate}
+              >
+                <Text>Confirm</Text>
+              </TouchableOpacity>
+            </View>
           )}
           <Pressable onPress={toggleDatePicker}>
             <TextInput
@@ -164,6 +207,7 @@ export default function AddProjectScreen() {
               value={project.deadline}
               onChangeText={(value) => handleChange("deadline", value)}
               editable={false}
+              onPressIn={toggleDatePicker}
             />
           </Pressable>
 
@@ -211,22 +255,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    padding: 18,
+    padding: 20,
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 32,
+    justifyContent: "space-between",
+    marginTop: 10,
     marginBottom: 20,
   },
   header: {
-    marginLeft: 15,
+    marginLeft: 10,
+    textAlign: "left",
     fontWeight: "bold",
     flex: 1,
   },
   bodyContainer: {
     flex: 1,
-    padding: 8,
+    padding: 10,
   },
   inputTitle: {
     fontSize: 16,
@@ -234,15 +280,18 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: "transparent",
-    marginBottom: 14,
+    marginBottom: 10,
     fontSize: 15,
     paddingHorizontal: 0,
+  },
+  datePicker: {
+    height: 150,
   },
   button: {
     marginTop: 25,
     borderRadius: 12,
     backgroundColor: "#471D67",
-    paddingVertical: 2,
+    paddingVertical: 4,
   },
   disabledButton: {
     backgroundColor: "#E6E6E6",

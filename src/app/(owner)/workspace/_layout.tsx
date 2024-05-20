@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomNavigation } from "react-native-paper";
 import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Workspace from "../workspace/owner-workspace";
 import YourProjectScreen from "../project/your-project";
 import OwnerProfile from "../profile/owner-profile";
+import Workspace from "../workspace/owner-workspace";
 
 interface RouteParams {
   key: string;
@@ -19,7 +19,7 @@ interface RouteParams {
 
 const Tab = createBottomTabNavigator();
 
-export default function ProfileTabs() {
+export default function WorkspaceTabs() {
   return (
     <Tab.Navigator
       screenOptions={{

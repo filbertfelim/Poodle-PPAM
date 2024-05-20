@@ -1,30 +1,165 @@
 import { useAuth } from "@/providers/AuthProvider";
 import { View } from "@/components/Themed";
-import { Pressable, StyleSheet } from "react-native";
-import { Button, Text } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import { FlatList, Pressable, SafeAreaView, StyleSheet } from "react-native";
+import { ActivityIndicator, Text } from "react-native-paper";
+import {
+  CommonActions,
+  useIsFocused,
+  useNavigation,
+} from "@react-navigation/native";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+
+interface ProjectInterface {
+  project_id: number;
+  project_title: string;
+  project_desc: string;
+  project_deadline: Date;
+  project_fee: number;
+  project_status: string;
+  project_date_created: string;
+  owner_id: string;
+}
 
 export default function YourProjectScreen() {
+  const isFocused = useIsFocused();
   const { user } = useAuth();
   const navigation = useNavigation();
+  const [projects, setProjects] = useState<ProjectInterface[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text variant="headlineSmall" style={styles.textHeader}>
-          Your Project
-        </Text>
-        <Pressable
-          onPress={() => {
-            console.log("Pressed!");
-            navigation.navigate("AddProject" as never);
-          }}
-        >
-          <Text>Add</Text>
-        </Pressable>
+  const getProjects = async (ownerId: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("Project")
+        .select("*")
+        .eq("owner_id", ownerId)
+        .order("project_date_created", { ascending: false });
+      if (error) throw new Error(error.message);
+      setProjects(data);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.user_id) {
+      getProjects(user.user_id);
+    }
+  }, [user?.user_id]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    if (user?.user_id) {
+      await getProjects(user.user_id);
+    }
+    setRefreshing(false);
+  };
+
+  const formatFee = (amount: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(amount);
+  };
+
+  const renderItem = ({ item }: { item: ProjectInterface }) => (
+    <Pressable
+      style={styles.projectItem}
+      onPress={() => {
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: "ProjectDetails",
+            params: { projectId: item.project_id },
+          })
+        );
+      }}
+    >
+      <Text style={styles.projectTitle}>{item.project_title}</Text>
+      <View style={styles.statusWrapper}>
+        {item.project_status === "available" && (
+          <View style={styles.statusContainerAvailable}>
+            <Text style={styles.statusTextAvailable}>Available</Text>
+          </View>
+        )}
+        {item.project_status === "unavailable" && (
+          <View style={styles.statusContainerUnavailable}>
+            <Text style={styles.statusTextUnavailable}>Unvailable</Text>
+          </View>
+        )}
       </View>
-    </View>
+      <Text style={styles.projectFee}>
+        <Text>Fee : </Text>
+        <Text style={styles.numberFee}>{formatFee(item.project_fee)}</Text>
+      </Text>
+      <Text style={styles.projectDesc} numberOfLines={3}>
+        {item.project_desc}
+      </Text>
+    </Pressable>
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#471D67" />
+      </View>
+    );
+  }
+
+  if (projects.length > 0) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text variant="headlineSmall" style={styles.textHeader}>
+            Your Projects
+          </Text>
+          <Pressable
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate("AddProject" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>Add</Text>
+          </Pressable>
+        </View>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={projects}
+          keyExtractor={(item) => item.project_id.toString()}
+          renderItem={renderItem}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text variant="headlineSmall" style={styles.textHeader}>
+            Your Projects
+          </Text>
+          <Pressable
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate("AddProject" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>Add</Text>
+          </Pressable>
+        </View>
+        <View style={styles.bodyContainer}>
+          <Text style={styles.noProjects}>
+            {"You don't have any projects.\nLet's create a new project!"}
+          </Text>
+        </View>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -32,6 +167,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 25,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   headerContainer: {
     flexDirection: "row",
@@ -41,22 +182,91 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   textHeader: {
+    textAlign: "center",
+    fontFamily: "Inter",
     fontWeight: "bold",
   },
   button: {
     borderRadius: 25,
     backgroundColor: "#F3EDF7",
+    borderWidth: 1,
     borderColor: "#471D67",
+    paddingHorizontal: 12,
+    paddingVertical: 2,
     justifyContent: "flex-end",
   },
   buttonText: {
-    backgroundColor: "#F3EDF7",
     color: "#471D67",
     fontSize: 16,
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 2,
-    borderRadius: 25,
     fontWeight: "bold",
+  },
+  projectItem: {
+    flexDirection: "column",
+    padding: 15,
+    borderRadius: 20,
+    marginVertical: 10,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    gap: 6,
+  },
+  projectTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  projectFee: {
+    fontSize: 13,
+  },
+  numberFee: {
+    color: "#4E833C",
+    fontWeight: "bold",
+  },
+  projectDesc: {
+    color: "#777777",
+    fontSize: 12,
+  },
+  bodyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noProjects: {
+    textAlign: "center",
+    fontSize: 18,
+    lineHeight: 25,
+    fontWeight: "bold",
+    color: "#471D67",
+  },
+  statusWrapper: {
+    alignItems: "flex-start",
+    marginVertical: 5,
+    justifyContent: "space-between",
+  },
+  statusContainerAvailable: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E0ECFD",
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 20,
+    justifyContent: "space-between",
+  },
+  statusTextAvailable: {
+    color: "#151970",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  statusContainerUnavailable: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFCBE",
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 20,
+    justifyContent: "space-between",
+  },
+  statusTextUnavailable: {
+    color: "#C67243",
+    fontWeight: "bold",
+    fontSize: 12,
   },
 });
