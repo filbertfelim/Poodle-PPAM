@@ -53,6 +53,7 @@ export default function ProjectApplicant() {
         .order("application_date", { ascending: false });
       if (error) throw new Error(error.message);
       setApplication(data[0]);
+      console.log("Success fetching application data");
     } catch (error) {
       console.error("Error fetching application:", error);
     }
@@ -66,6 +67,7 @@ export default function ProjectApplicant() {
         .eq("seeker_id", applicant);
       if (error) throw new Error(error.message);
       setApplicant(data[0]);
+      console.log("Success fetching applicant data");
     } catch (error) {
       console.error("Error fetching applicant:", error);
     }
@@ -79,6 +81,7 @@ export default function ProjectApplicant() {
         .eq("user_id", seeker);
       if (error) throw new Error(error.message);
       setSeeker(data[0]);
+      console.log("Success fetching seeker data");
     } catch (error) {
       console.error("Error fetching seeker:", error);
     }
@@ -92,6 +95,7 @@ export default function ProjectApplicant() {
         .eq("project_id", projectId);
       if (error) throw new Error(error.message);
       setProject(data[0]);
+      console.log("Success fetching project data");
     } catch (error) {
       console.error("Error fetching project:", error);
     }
@@ -129,17 +133,20 @@ export default function ProjectApplicant() {
         .from("Application")
         .update({ application_status: status })
         .eq("application_id", applicationId);
+      console.log("Success updating application status");
       if (status === "rejected") {
         const { error } = await supabase
           .from("Project")
           .update({ project_status: "available" })
           .eq("project_id", projectId);
+        console.log("Success updating project status");
       } else {
         addWorkspace(projectId);
         const { error } = await supabase
           .from("Project")
           .update({ project_status: "unavailable" })
           .eq("project_id", projectId);
+        console.log("Success updating project status");
       }
       navigation.goBack();
     } catch (error) {
