@@ -1,12 +1,15 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import ProjectTabs from "./project/_layout";
+import OwnerTabs from "./project/_layout";
 import AddProjectScreen from "./project/add-project";
 import Boards from "./boards/boards";
 import AddBoard from "./boards/add-board";
 import KanbanBoard from "./boards/kanban-board";
 import AddActivity from "./activity/add-activity";
 import EditActivity from "./activity/edit-activity";
+import ProjectDetails from "./project/[project_id]";
+import ProjectApplicant from "./project/applicant/[applicant_id]";
+import YourProjectScreen from "./project/your-project";
 
 const Stack = createStackNavigator();
 
@@ -15,13 +18,27 @@ export default function TabLayout() {
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
-        component={ProjectTabs}
+        component={OwnerTabs}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="AddProject"
         component={AddProjectScreen}
         options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="ProjectDetails"
+        component={ProjectDetails}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ProjectApplicant"
+        component={ProjectApplicant}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="Boards"

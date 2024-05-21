@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomNavigation } from "react-native-paper";
 import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import SeekerProfile from "./seeker-profile";
+import SeekerProfile from "../profile/seeker-profile";
 import Workspace from "@/app/(owner)/workspace/owner-workspace";
 import SeekerProjects from "../project/seeker-project";
 

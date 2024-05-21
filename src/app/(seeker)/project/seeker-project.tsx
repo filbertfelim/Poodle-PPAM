@@ -1,6 +1,6 @@
 import { useAuth } from "@/providers/AuthProvider";
 import { View } from "@/components/Themed";
-import { FlatList, Pressable, SafeAreaView, StyleSheet } from "react-native";
+import { FlatList, Pressable, StyleSheet } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 import {
   CommonActions,
@@ -10,35 +10,56 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
-interface ProjectInterface {
-  project_id: number;
+interface ApplicationInterface {
+  application_id: number;
+  application_status: string;
+  application_date: string;
+  project_id: string;
   project_title: string;
   project_desc: string;
-  project_deadline: Date;
   project_fee: number;
-  project_status: string;
-  project_date_created: string;
-  owner_id: string;
 }
 
-export default function YourProjectScreen() {
+export default function SeekerProjects() {
   const isFocused = useIsFocused();
   const { user } = useAuth();
   const navigation = useNavigation();
-  const [projects, setProjects] = useState<ProjectInterface[]>([]);
+  const [applications, setApplications] = useState<ApplicationInterface[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const getProjects = async (ownerId: string) => {
+  const getApplications = async (seekerId: string) => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("Project")
-        .select("*")
-        .eq("owner_id", ownerId)
-        .order("project_date_created", { ascending: false });
+        .from("Application")
+        .select(
+          `
+                application_id, 
+                application_status, 
+                application_date,
+                project_id,
+                Project (
+                    project_title, 
+                    project_desc, 
+                    project_fee
+                )
+            `
+        )
+        .eq("seeker_id", seekerId)
+        .order("application_date", { ascending: false });
       if (error) throw new Error(error.message);
-      setProjects(data);
+      const formattedData = data.map((app: any) => ({
+        application_id: app.application_id,
+        application_status: app.application_status,
+        application_date: app.application_date,
+        project_id: app.project_id,
+        project_title: app.Project.project_title,
+        project_desc: app.Project.project_desc,
+        project_fee: app.Project.project_fee,
+      }));
+      setApplications(formattedData);
+      console.log("Success getting applications");
     } catch (error) {
       console.error("Error fetching projects:", error);
     } finally {
@@ -48,14 +69,14 @@ export default function YourProjectScreen() {
 
   useEffect(() => {
     if (user?.user_id && isFocused) {
-      getProjects(user.user_id);
+      getApplications(user.user_id);
     }
   }, [user?.user_id, isFocused]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     if (user?.user_id) {
-      await getProjects(user.user_id);
+      await getApplications(user.user_id);
     }
     setRefreshing(false);
   };
@@ -67,33 +88,33 @@ export default function YourProjectScreen() {
     }).format(amount);
   };
 
-  const renderItem = ({ item }: { item: ProjectInterface }) => (
+  const renderItem = ({ item }: { item: ApplicationInterface }) => (
     <Pressable
       style={styles.projectItem}
       onPress={() => {
         navigation.dispatch(
           CommonActions.navigate({
-            name: "ProjectDetails",
-            params: { projectId: item.project_id },
+            name: "ApplicationDetails",
+            params: { applicationId: item.application_id },
           })
         );
       }}
     >
       <Text style={styles.projectTitle}>{item.project_title}</Text>
       <View style={styles.statusWrapper}>
-        {item.project_status === "available" && (
-          <View style={styles.statusContainerAvailable}>
-            <Text style={styles.statusTextAvailable}>Available</Text>
+        {item.application_status === "approved" && (
+          <View style={styles.statusContainerApproved}>
+            <Text style={styles.statusTextApproved}>Approved</Text>
           </View>
         )}
-        {item.project_status === "in review" && (
+        {item.application_status === "in review" && (
           <View style={styles.statusContainerInReview}>
             <Text style={styles.statusTextInReview}>In Review</Text>
           </View>
         )}
-        {item.project_status === "unavailable" && (
-          <View style={styles.statusContainerUnavailable}>
-            <Text style={styles.statusTextUnavailable}>Unavailable</Text>
+        {item.application_status === "rejected" && (
+          <View style={styles.statusContainerRejected}>
+            <Text style={styles.statusTextRejected}>Rejected</Text>
           </View>
         )}
       </View>
@@ -115,26 +136,18 @@ export default function YourProjectScreen() {
     );
   }
 
-  if (projects.length > 0) {
+  if (applications.length > 0) {
     return (
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Text variant="headlineSmall" style={styles.textHeader}>
-            Your Projects
+            Your Applications
           </Text>
-          <Pressable
-            style={styles.button}
-            onPress={() => {
-              navigation.navigate("AddProject" as never);
-            }}
-          >
-            <Text style={styles.buttonText}>Add</Text>
-          </Pressable>
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={projects}
-          keyExtractor={(item) => item.project_id.toString()}
+          data={applications}
+          keyExtractor={(item) => item.application_id.toString()}
           renderItem={renderItem}
           refreshing={refreshing}
           onRefresh={handleRefresh}
@@ -146,21 +159,14 @@ export default function YourProjectScreen() {
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Text variant="headlineSmall" style={styles.textHeader}>
-            Your Projects
+            Your Applications
           </Text>
-          <Pressable
-            style={styles.button}
-            onPress={() => {
-              navigation.navigate("AddProject" as never);
-              setLoading(true);
-            }}
-          >
-            <Text style={styles.buttonText}>Add</Text>
-          </Pressable>
         </View>
         <View style={styles.bodyContainer}>
           <Text style={styles.noProjects}>
-            {"You don't have any projects.\nLet's create a new project!"}
+            {
+              "You haven't applied to any projects.\nLet's start explore available projects!"
+            }
           </Text>
         </View>
       </View>
@@ -190,20 +196,6 @@ const styles = StyleSheet.create({
   textHeader: {
     textAlign: "center",
     fontFamily: "Inter",
-    fontWeight: "bold",
-  },
-  button: {
-    borderRadius: 25,
-    backgroundColor: "#F3EDF7",
-    borderWidth: 1,
-    borderColor: "#471D67",
-    paddingHorizontal: 12,
-    paddingVertical: 2,
-    justifyContent: "flex-end",
-  },
-  buttonText: {
-    color: "#471D67",
-    fontSize: 16,
     fontWeight: "bold",
   },
   projectItem: {
@@ -247,7 +239,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     justifyContent: "space-between",
   },
-  statusContainerAvailable: {
+  statusContainerApproved: {
     alignItems: "center",
     backgroundColor: "#E0ECFD",
     paddingHorizontal: 12,
@@ -255,7 +247,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "space-between",
   },
-  statusTextAvailable: {
+  statusTextApproved: {
     color: "#151970",
     fontWeight: "bold",
     fontSize: 12,
@@ -273,7 +265,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
   },
-  statusContainerUnavailable: {
+  statusContainerRejected: {
     alignItems: "center",
     backgroundColor: "#E6E6E6",
     paddingHorizontal: 12,
@@ -281,7 +273,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "space-between",
   },
-  statusTextUnavailable: {
+  statusTextRejected: {
     color: "#646464",
     fontWeight: "bold",
     fontSize: 12,
