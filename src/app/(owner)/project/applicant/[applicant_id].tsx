@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Pressable,
-  StyleSheet,
-  Linking,
-} from "react-native";
+import { View, Pressable, StyleSheet, Linking } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";

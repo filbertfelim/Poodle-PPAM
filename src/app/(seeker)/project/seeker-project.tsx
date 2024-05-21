@@ -3,6 +3,7 @@ import { View } from "@/components/Themed";
 import { FlatList, Pressable, StyleSheet } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 import {
+  CommonActions,
   useIsFocused,
   useNavigation,
 } from "@react-navigation/native";
@@ -88,7 +89,17 @@ export default function SeekerProjects() {
   };
 
   const renderItem = ({ item }: { item: ApplicationInterface }) => (
-    <Pressable style={styles.projectItem}>
+    <Pressable
+      style={styles.projectItem}
+      onPress={() => {
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: "ApplicationDetails",
+            params: { applicationId: item.application_id },
+          })
+        );
+      }}
+    >
       <Text style={styles.projectTitle}>{item.project_title}</Text>
       <View style={styles.statusWrapper}>
         {item.application_status === "approved" && (

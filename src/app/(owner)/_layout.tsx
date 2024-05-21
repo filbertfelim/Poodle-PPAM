@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import ProjectTabs from "./project/_layout";
+import OwnerTabs from "./project/_layout";
 import AddProjectScreen from "./project/add-project";
 import Boards from "./boards/boards";
 import AddBoard from "./boards/add-board";
@@ -18,7 +18,7 @@ export default function TabLayout() {
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
-        component={ProjectTabs}
+        component={OwnerTabs}
         options={{ headerShown: false }}
       />
       <Stack.Screen

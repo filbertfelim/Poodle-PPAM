@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, StyleSheet, ScrollView } from "react-native";
+import { View, Pressable, StyleSheet, ScrollView, Linking } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import {
   CommonActions,
@@ -10,50 +10,90 @@ import { useLocalSearchParams } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { supabase } from "@/lib/supabase";
 
-interface ProjectInterface {
+interface ApplicationInfoInterface {
+  application_id: number;
+  application_status: string;
+  application_date: string;
   project_id: number;
   project_title: string;
   project_desc: string;
   project_deadline: Date;
   project_fee: number;
-  project_status: string;
-  project_date_created: string;
   owner_id: string;
+  email: string;
+  name: string;
 }
 
-export default function ProjectDetails() {
+export default function ApplicationDetails() {
   const isFocused = useIsFocused();
-  const { projectId } = useLocalSearchParams();
+  const { applicationId } = useLocalSearchParams();
   const navigation = useNavigation();
-  const [project, setProject] = useState<ProjectInterface>();
+  const [applicationInfo, setApplicationInfo] =
+    useState<ApplicationInfoInterface>();
 
-  const getProjectById = async (projectId: number) => {
+  const getApplicationInfo = async (applicationId: number) => {
     try {
       const { data, error } = await supabase
-        .from("Project")
-        .select("*")
-        .eq("project_id", projectId);
+        .from("Application")
+        .select(
+          `
+                    application_id,
+                    application_status,
+                    application_date,
+                    project_id,
+                    Project (
+                        project_title,
+                        project_desc,
+                        project_deadline,
+                        project_fee,
+                        owner_id,
+                        ProjectOwner (
+                          User (
+                            email,
+                            name
+                          )
+                        )
+                    )
+
+                `
+        )
+        .eq("application_id", applicationId);
       if (error) throw new Error(error.message);
-      setProject(data[0]);
+      const app: any = data[0];
+      const formattedData = {
+        application_id: app.application_id,
+        application_status: app.application_status,
+        application_date: app.application_date,
+        project_id: app.project_id,
+        project_title: app.Project.project_title,
+        project_desc: app.Project.project_desc,
+        project_deadline: app.Project.project_deadline,
+        project_fee: app.Project.project_fee,
+        owner_id: app.Project.owner_id,
+        email: app.Project.ProjectOwner.User.email,
+        name: app.Project.ProjectOwner.User.name,
+      };
+      setApplicationInfo(formattedData);
+      console.log("Success fetching application information");
     } catch (error) {
-      console.error("Error fetching project:", error);
+      console.error("Error fetching application information:", error);
     }
   };
 
   useEffect(() => {
     if (isFocused) {
-      getProjectById(Number(projectId));
+      getApplicationInfo(Number(applicationId));
     }
   }, [isFocused]);
 
   const getStatusStyles = (status: string) => {
-    if (status === "available") {
+    if (status === "approved") {
       return {
         container: styles.statusContainerAvailable,
         text: styles.statusTextAvailable,
         dot: styles.statusDotAvailable,
       };
-    } else if (status === "unavailable") {
+    } else if (status === "rejected") {
       return {
         container: styles.statusContainerUnavailable,
         text: styles.statusTextUnavailable,
@@ -75,14 +115,29 @@ export default function ProjectDetails() {
       .join(" ");
   };
 
-  if (project) {
-    const statusStyles = getStatusStyles(project.project_status);
-    const capitalizedStatus = capitalizeWords(project.project_status);
-    const formattedDate = new Date(project.project_deadline).toLocaleDateString(
-      "en-GB",
-      { day: "2-digit", month: "long", year: "numeric" }
+  const handleEmailPress = (email: string) => {
+    Linking.openURL(`mailto:${email}`);
+  };
+
+  if (applicationInfo) {
+    const statusStyles = getStatusStyles(applicationInfo.application_status);
+    const capitalizedStatus = capitalizeWords(
+      applicationInfo.application_status
     );
-    const isProjectAvailable = project.project_status === "available";
+    const formattedDeadline = new Date(
+      applicationInfo.project_deadline
+    ).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+    const formattedApplied = new Date(
+      applicationInfo.application_date
+    ).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
 
     return (
       <View style={styles.container}>
@@ -93,11 +148,13 @@ export default function ProjectDetails() {
         </View>
         <View style={styles.bodyContainer}>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={styles.title}>{project.project_title}</Text>
+            <Text style={styles.title}>{applicationInfo.project_title}</Text>
             <Text style={styles.sectionTitle}>Project Description :</Text>
-            <Text style={styles.description}>{project.project_desc}</Text>
+            <Text style={styles.description}>
+              {applicationInfo.project_desc}
+            </Text>
             <Divider style={styles.divider} />
-            <Text style={styles.sectionTitle}>Status Project :</Text>
+            <Text style={styles.sectionTitle}>Application Status :</Text>
             <View style={styles.defaultWrapper}>
               <View style={statusStyles.container}>
                 <Text style={statusStyles.text}>{capitalizedStatus}</Text>
@@ -110,35 +167,40 @@ export default function ProjectDetails() {
             </Text>
             <View style={styles.defaultWrapper}>
               <Text style={styles.defaultLabel}>max.</Text>
-              <Text style={styles.defaultText}>{formattedDate}</Text>
+              <Text style={styles.defaultText}>{formattedDeadline}</Text>
             </View>
             <Text style={styles.sectionTitle}>Project Fee :</Text>
             <View style={styles.defaultWrapper}>
               <Text style={styles.defaultLabel}>IDR</Text>
               <Text style={styles.defaultText}>
-                {project.project_fee.toLocaleString("id-ID")}
+                {applicationInfo.project_fee.toLocaleString("id-ID")}
               </Text>
             </View>
+            <Text style={styles.sectionTitle}>Contact :</Text>
+            <View style={styles.contactWrapper}>
+              <View style={styles.contactDetailWrapper}>
+                <Text style={styles.contactLabel}>Name</Text>
+                <Text style={styles.contactText}>{applicationInfo.name}</Text>
+              </View>
+              <View style={styles.contactDetailWrapper}>
+                <Text style={styles.contactLabel}>Email</Text>
+                <Pressable
+                  onPress={() => handleEmailPress(applicationInfo.email)}
+                >
+                  <Text style={styles.contactText}>
+                    {applicationInfo.email}
+                  </Text>
+                </Pressable>
+              </View>
+              <Text style={styles.note}>
+                * feel free to contact the project owner to ask more about the
+                detail information regarding the project specification
+              </Text>
+            </View>
+            <Text style={styles.appliedDate}>
+              Applied at {formattedApplied}
+            </Text>
           </ScrollView>
-          <Button
-            mode="contained"
-            style={[styles.button, isProjectAvailable && styles.disabledButton]}
-            labelStyle={[
-              styles.buttonText,
-              isProjectAvailable && styles.disabledButtonText,
-            ]}
-            disabled={isProjectAvailable}
-            onPress={() => {
-              navigation.dispatch(
-                CommonActions.navigate({
-                  name: "ProjectApplicant",
-                  params: { projectApplicant: projectId },
-                })
-              );
-            }}
-          >
-            View Applicants
-          </Button>
         </View>
       </View>
     );
@@ -195,6 +257,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#4E833C",
+  },
+  contactWrapper: {
+    flexDirection: "column",
+    marginBottom: 25,
+  },
+  contactDetailWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  contactLabel: {
+    fontSize: 14,
+    color: "#777777",
+  },
+  contactText: {
+    fontSize: 14,
+  },
+  note: {
+    fontSize: 12,
+    color: "#A2A2A2",
+    textAlign: "justify",
+  },
+  appliedDate: {
+    fontSize: 12,
+    textAlign: "right",
+    color: "red",
+    fontWeight: "bold",
   },
   statusContainerAvailable: {
     flexDirection: "row",

@@ -19,7 +19,7 @@ interface RouteParams {
 
 const Tab = createBottomTabNavigator();
 
-export default function ProfileTabs() {
+export default function OwnerTabs() {
   return (
     <Tab.Navigator
       screenOptions={{

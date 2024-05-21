@@ -19,7 +19,7 @@ interface RouteParams {
 
 const Tab = createBottomTabNavigator();
 
-export default function ProfileTabs() {
+export default function SeekerTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -83,7 +83,7 @@ export default function ProfileTabs() {
         name="SeekerProjects"
         component={SeekerProjects}
         options={{
-          tabBarLabel: "Projects",
+          tabBarLabel: "Applications",
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="file-document-multiple-outline"
