@@ -100,7 +100,8 @@ export default function EditCV() {
               placeholder="Enter CV"
               value={file.cv}
               onChangeText={(value) => handleChange("cv", value)}
-              maxLength={80}
+              maxLength={200}
+              multiline={true}
             />
             <Button
               mode="contained"

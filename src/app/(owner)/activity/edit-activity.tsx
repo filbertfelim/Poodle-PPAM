@@ -192,6 +192,7 @@ export default function EditActivity() {
             value={activity.activityLastName}
             onChangeText={(value) => handleChange("activityLastName", value)}
             maxLength={80}
+            multiline={true}
           />
           <Text style={styles.inputTitle}>Activity Description</Text>
           <TextInput
@@ -199,7 +200,8 @@ export default function EditActivity() {
             placeholder="Enter activity description"
             value={activity.activityLastDesc}
             onChangeText={(value) => handleChange("activityLastDesc", value)}
-            maxLength={80}
+            maxLength={150}
+            multiline={true}
           />
           <Text style={styles.inputTitle}>Activity Start Date</Text>
           {showStartDatePicker && (

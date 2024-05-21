@@ -79,6 +79,7 @@ export default function AddBoard() {
             value={board.boardTitle}
             onChangeText={(value) => handleChange("boardTitle", value)}
             maxLength={80}
+            multiline={true}
           />
           <Button
             mode="contained"

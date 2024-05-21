@@ -149,6 +149,7 @@ export default function AddProjectScreen() {
             value={project.projectName}
             onChangeText={(value) => handleChange("projectName", value)}
             maxLength={80}
+            multiline={true}
           />
           <Text style={styles.inputTitle}>Project Deadline</Text>
 

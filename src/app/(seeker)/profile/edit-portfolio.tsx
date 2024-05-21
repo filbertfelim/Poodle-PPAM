@@ -100,7 +100,8 @@ export default function EditPortfolio() {
               placeholder="Enter portfolio"
               value={file.portfolio}
               onChangeText={(value) => handleChange("portfolio", value)}
-              maxLength={80}
+              maxLength={200}
+              multiline={true}
             />
             <Button
               mode="contained"
