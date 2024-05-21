@@ -1,103 +1,103 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Pressable,
   StyleSheet,
   Linking,
-  InteractionManager,
 } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { supabase } from "@/lib/supabase";
 
-interface ApplicationInterface {
+interface ApplicantInterface {
   application_id: number;
   application_status: string;
   seeker_id: string;
-}
-
-interface ApplicantInterface {
-  seeker_id: string;
-  cv: string;
-  portfolio: string;
+  project_id: string;
+  project_title: string;
+  owner_id: string;
 }
 
 interface SeekerInterface {
-  user_id: string;
+  seeker_id: string;
+  cv: string;
+  portfolio: string;
   email: string;
   name: string;
-}
-
-interface ProjectInterface {
-  project_id: number;
-  project_title: string;
-  owner_id: string;
 }
 
 export default function ProjectApplicant() {
   const { projectApplicant } = useLocalSearchParams();
   const navigation = useNavigation();
-  const [application, setApplication] = useState<ApplicationInterface>();
   const [applicant, setApplicant] = useState<ApplicantInterface>();
   const [seeker, setSeeker] = useState<SeekerInterface>();
-  const [project, setProject] = useState<ProjectInterface>();
 
-  const getApplication = async (projectApplicant: number) => {
+  const getApplicant = async (projectId: number) => {
     try {
       const { data, error } = await supabase
         .from("Application")
-        .select("application_id, application_status, seeker_id")
-        .eq("project_id", projectApplicant)
+        .select(
+          `
+                application_id, 
+                application_status, 
+                seeker_id,
+                project_id,
+                Project (
+                    project_title, 
+                    owner_id
+                )
+            `
+        )
+        .eq("project_id", projectId)
         .order("application_date", { ascending: false });
       if (error) throw new Error(error.message);
-      setApplication(data[0]);
-      console.log("Success fetching application data");
+      const app: any = data[0];
+      const formattedData = {
+        application_id: app.application_id,
+        application_status: app.application_status,
+        seeker_id: app.seeker_id,
+        project_id: app.project_id,
+        project_title: app.Project.project_title,
+        owner_id: app.Project.owner_id,
+      };
+      setApplicant(formattedData);
+      console.log("Success getting applicants");
     } catch (error) {
-      console.error("Error fetching application:", error);
-    }
-  };
-
-  const getApplicant = async (applicant: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("ProjectSeeker")
-        .select("*")
-        .eq("seeker_id", applicant);
-      if (error) throw new Error(error.message);
-      setApplicant(data[0]);
-      console.log("Success fetching applicant data");
-    } catch (error) {
-      console.error("Error fetching applicant:", error);
+      console.error("Error fetching applicants:", error);
     }
   };
 
   const getSeeker = async (seeker: string) => {
     try {
       const { data, error } = await supabase
-        .from("User")
-        .select("user_id, email, name")
-        .eq("user_id", seeker);
+        .from("ProjectSeeker")
+        .select(
+          `
+                seeker_id, 
+                cv, 
+                portfolio,
+                User (
+                    email, 
+                    name
+                )
+            `
+        )
+        .eq("seeker_id", seeker);
       if (error) throw new Error(error.message);
-      setSeeker(data[0]);
+      const app: any = data[0];
+      const formattedData = {
+        seeker_id: app.seeker_id,
+        cv: app.cv,
+        portfolio: app.portfolio,
+        email: app.User.email,
+        name: app.User.name,
+      };
+      setSeeker(formattedData);
       console.log("Success fetching seeker data");
     } catch (error) {
       console.error("Error fetching seeker:", error);
-    }
-  };
-
-  const getProjectById = async (projectId: number) => {
-    try {
-      const { data, error } = await supabase
-        .from("Project")
-        .select("project_id, project_title, owner_id")
-        .eq("project_id", projectId);
-      if (error) throw new Error(error.message);
-      setProject(data[0]);
-      console.log("Success fetching project data");
-    } catch (error) {
-      console.error("Error fetching project:", error);
     }
   };
 
@@ -105,11 +105,11 @@ export default function ProjectApplicant() {
     try {
       const { data, error } = await supabase.from("Workspace").insert([
         {
-          workspace_name: project?.project_title,
+          workspace_name: applicant?.project_title,
           workspace_type: "project",
           project_id: projectId,
-          user_id: project?.owner_id,
-          seeker_id: application?.seeker_id,
+          user_id: applicant?.owner_id,
+          seeker_id: applicant?.seeker_id,
         },
       ]);
       if (error) {
@@ -155,13 +155,11 @@ export default function ProjectApplicant() {
   };
 
   useEffect(() => {
-    getApplication(Number(projectApplicant));
-    getProjectById(Number(projectApplicant));
-    if (application?.seeker_id) {
-      getApplicant(application.seeker_id);
-      getSeeker(application.seeker_id);
+    getApplicant(Number(projectApplicant));
+    if (applicant?.seeker_id) {
+      getSeeker(applicant.seeker_id);
     }
-  });
+  }, [projectApplicant, applicant?.application_status]);
 
   const capitalizeWords = (sentence: string) => {
     return sentence
@@ -180,7 +178,7 @@ export default function ProjectApplicant() {
     Linking.openURL(`mailto:${email}`);
   };
 
-  if (application && applicant && seeker) {
+  if (applicant && seeker) {
     return (
       <View style={styles.container}>
         <View style={styles.headerContainer}>
@@ -205,22 +203,22 @@ export default function ProjectApplicant() {
           </Pressable>
           <Divider style={styles.divider} />
           <Text style={styles.infoTitle}>Applicant CV</Text>
-          <Pressable onPress={() => openLink(applicant.cv)}>
-            <Text style={styles.link}>{applicant.cv}</Text>
+          <Pressable onPress={() => openLink(seeker.cv)}>
+            <Text style={styles.link}>{seeker.cv}</Text>
           </Pressable>
           <Divider style={styles.divider} />
           <Text style={styles.infoTitle}>Applicant Portfolio</Text>
-          <Pressable onPress={() => openLink(applicant.portfolio)}>
-            <Text style={styles.link}>{applicant.portfolio}</Text>
+          <Pressable onPress={() => openLink(seeker.portfolio)}>
+            <Text style={styles.link}>{seeker.portfolio}</Text>
           </Pressable>
         </View>
-        {application.application_status === "in review" && (
+        {applicant.application_status === "in review" && (
           <View style={styles.buttonContainer}>
             <Button
               mode="contained"
               onPress={() =>
                 updateApplicationStatus(
-                  application.application_id,
+                  applicant.application_id,
                   "approved",
                   Number(projectApplicant)
                 )
@@ -233,7 +231,7 @@ export default function ProjectApplicant() {
               mode="outlined"
               onPress={() =>
                 updateApplicationStatus(
-                  application.application_id,
+                  applicant.application_id,
                   "rejected",
                   Number(projectApplicant)
                 )

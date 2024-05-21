@@ -1,8 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { View, Pressable, StyleSheet, ScrollView, InteractionManager } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
-import { CommonActions, useNavigation } from "@react-navigation/native";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import {
+  CommonActions,
+  useIsFocused,
+  useNavigation,
+} from "@react-navigation/native";
+import { useLocalSearchParams } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { supabase } from "@/lib/supabase";
 
@@ -18,6 +27,7 @@ interface ProjectInterface {
 }
 
 export default function ProjectDetails() {
+  const isFocused = useIsFocused();
   const { projectId } = useLocalSearchParams();
   const navigation = useNavigation();
   const [project, setProject] = useState<ProjectInterface>();
@@ -36,8 +46,10 @@ export default function ProjectDetails() {
   };
 
   useEffect(() => {
-    getProjectById(Number(projectId));
-  });
+    if (isFocused) {
+      getProjectById(Number(projectId));
+    }
+  }, [isFocused]);
 
   const getStatusStyles = (status: string) => {
     if (status === "available") {
@@ -125,7 +137,7 @@ export default function ProjectDetails() {
               navigation.dispatch(
                 CommonActions.navigate({
                   name: "ProjectApplicant",
-                  params: { projectApplicant : projectId },
+                  params: { projectApplicant: projectId },
                 })
               );
             }}

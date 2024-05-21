@@ -1,9 +1,8 @@
 import { useAuth } from "@/providers/AuthProvider";
 import { View } from "@/components/Themed";
-import { FlatList, Pressable, SafeAreaView, StyleSheet } from "react-native";
+import { FlatList, Pressable, StyleSheet } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 import {
-  CommonActions,
   useIsFocused,
   useNavigation,
 } from "@react-navigation/native";

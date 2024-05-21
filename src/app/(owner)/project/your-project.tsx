@@ -4,6 +4,7 @@ import { FlatList, Pressable, SafeAreaView, StyleSheet } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 import {
   CommonActions,
+  useIsFocused,
   useNavigation,
 } from "@react-navigation/native";
 import { supabase } from "@/lib/supabase";
@@ -21,6 +22,7 @@ interface ProjectInterface {
 }
 
 export default function YourProjectScreen() {
+  const isFocused = useIsFocused();
   const { user } = useAuth();
   const navigation = useNavigation();
   const [projects, setProjects] = useState<ProjectInterface[]>([]);
@@ -45,10 +47,10 @@ export default function YourProjectScreen() {
   };
 
   useEffect(() => {
-    if (user?.user_id) {
+    if (user?.user_id && isFocused) {
       getProjects(user.user_id);
     }
-  }, [user?.user_id]);
+  }, [user?.user_id, isFocused]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -150,6 +152,7 @@ export default function YourProjectScreen() {
             style={styles.button}
             onPress={() => {
               navigation.navigate("AddProject" as never);
+              setLoading(true);
             }}
           >
             <Text style={styles.buttonText}>Add</Text>
