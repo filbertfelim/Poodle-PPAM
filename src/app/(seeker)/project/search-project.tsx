@@ -1,7 +1,7 @@
 import { useAuth } from "@/providers/AuthProvider";
 import { View } from "@/components/Themed";
 import { FlatList, Pressable, SafeAreaView, StyleSheet } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
+import { ActivityIndicator, Searchbar, Text } from "react-native-paper";
 import {
   CommonActions,
   useIsFocused,
@@ -28,6 +28,7 @@ export default function SearchProject() {
   const [projects, setProjects] = useState<ProjectInterface[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getProjects = async () => {
     setLoading(true);
@@ -119,6 +120,10 @@ export default function SearchProject() {
     </Pressable>
   );
 
+  const filteredProjects = projects.filter((project) =>
+    project.project_title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -126,14 +131,22 @@ export default function SearchProject() {
           Search Projects
         </Text>
       </View>
+      <Searchbar
+        style={styles.searchContainer}
+        placeholder="Search"
+        onChangeText={setSearchQuery}
+        value={searchQuery}
+        mode="bar"
+        inputStyle={styles.searchText}
+      />
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#471D67" />
         </View>
-      ) : projects.length > 0 ? (
+      ) : filteredProjects.length > 0 ? (
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={projects}
+          data={filteredProjects}
           keyExtractor={(item) => item.project_id.toString()}
           renderItem={renderItem}
           refreshing={refreshing}
@@ -169,10 +182,21 @@ const styles = StyleSheet.create({
     marginTop: 25,
     marginBottom: 20,
   },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
   textHeader: {
     textAlign: "center",
     fontFamily: "Inter",
     fontWeight: "bold",
+  },
+  searchText: {
+    fontFamily: "Inter",
+    fontWeight: "700",
+    color: "#000",
   },
   button: {
     borderRadius: 25,
