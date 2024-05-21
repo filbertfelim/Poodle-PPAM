@@ -90,14 +90,6 @@ export default function Workspace() {
       </View>
     </Pressable>
   );
-  if (loading) {
-    // Show loading indicator when loading state is true
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#471D67" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -106,14 +98,20 @@ export default function Workspace() {
           Your Workspaces
         </Text>
       </View>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={workspaces}
-        keyExtractor={(item) => item.workspace_id.toString()}
-        renderItem={renderItem}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#471D67" />
+        </View>
+      ) : (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={workspaces}
+          keyExtractor={(item) => item.workspace_id.toString()}
+          renderItem={renderItem}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
+      )}
     </View>
   );
 }

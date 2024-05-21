@@ -86,41 +86,36 @@ export default function Boards() {
     </Pressable>
   );
 
-  if (loading) {
-    // Show loading indicator when loading state is true
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#471D67" />
-      </View>
-    );
-  }
-
-  if (boards.length > 0) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <View style={styles.headerTitle}>
-            <Pressable onPress={goBack}>
-              <Icon name="chevron-left" color="#471D67" size={30} />
-            </Pressable>
-            <Text variant="headlineSmall" style={styles.textHeader}>
-              {workspaceName}
-            </Text>
-          </View>
-          <Pressable
-            style={styles.button}
-            onPress={() => {
-              navigation.dispatch(
-                CommonActions.navigate({
-                  name: "AddBoard",
-                  params: { workspaceId: workspaceId },
-                })
-              );
-            }}
-          >
-            <Text style={styles.buttonText}>Add</Text>
+  return (
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerTitle}>
+          <Pressable onPress={goBack}>
+            <Icon name="chevron-left" color="#471D67" size={30} />
           </Pressable>
+          <Text variant="headlineSmall" style={styles.textHeader}>
+            {workspaceName}
+          </Text>
         </View>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            navigation.dispatch(
+              CommonActions.navigate({
+                name: "AddBoard",
+                params: { workspaceId: workspaceId },
+              })
+            );
+          }}
+        >
+          <Text style={styles.buttonText}>Add</Text>
+        </Pressable>
+      </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#471D67" />
+        </View>
+      ) : boards.length > 0 ? (
         <FlatList
           showsVerticalScrollIndicator={false}
           data={boards}
@@ -129,42 +124,15 @@ export default function Boards() {
           refreshing={refreshing}
           onRefresh={handleRefresh}
         />
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <View style={styles.headerTitle}>
-            <Pressable onPress={goBack}>
-              <Icon name="chevron-left" color="#471D67" size={30} />
-            </Pressable>
-            <Text variant="headlineSmall" style={styles.textHeader}>
-              {workspaceName}
-            </Text>
-          </View>
-          <Pressable
-            style={styles.button}
-            onPress={() => {
-              navigation.dispatch(
-                CommonActions.navigate({
-                  name: "AddBoard",
-                  params: { workspaceId: workspaceId },
-                })
-              );
-            }}
-          >
-            <Text style={styles.buttonText}>Add</Text>
-          </Pressable>
-        </View>
+      ) : (
         <View style={styles.bodyContainer}>
           <Text style={styles.noBoards}>
             {"You don't have any boards.\nLet's create a new board!"}
           </Text>
         </View>
-      </View>
-    );
-  }
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

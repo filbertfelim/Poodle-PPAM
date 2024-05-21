@@ -6,6 +6,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SeekerProfile from "./seeker-profile";
 import Workspace from "@/app/(owner)/workspace/owner-workspace";
 import SeekerProjects from "../project/seeker-project";
+import SearchProject from "../project/search-project";
 
 interface RouteParams {
   key: string;
@@ -69,16 +70,16 @@ export default function SeekerTabs() {
         />
       )}
     >
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Search"
-        component={YourProjectScreen}
+        component={SearchProject}
         options={{
           tabBarLabel: "Search",
           tabBarIcon: ({ color, size }) => (
-            <Icon name="search" size={size} color={color} />
+            <Icon name="magnify" size={size} color={color} />
           ),
         }}
-      />*/}
+      />
       <Tab.Screen
         name="SeekerProjects"
         component={SeekerProjects}

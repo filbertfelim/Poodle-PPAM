@@ -21,7 +21,7 @@ interface ProjectInterface {
   owner_id: string;
 }
 
-export default function YourProjectScreen() {
+export default function SearchProject() {
   const isFocused = useIsFocused();
   const { user } = useAuth();
   const navigation = useNavigation();
@@ -29,13 +29,25 @@ export default function YourProjectScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const getProjects = async (ownerId: string) => {
+  const getProjects = async () => {
     setLoading(true);
     try {
+      const { data: applicationData } = await supabase
+        .from("Application")
+        .select("project_id")
+        .eq("seeker_id", user.user_id);
+
+      var applicationIds = applicationData
+        ? applicationData?.map((data) => data.project_id)
+        : [];
+      const applicationIdsString =
+        applicationIds.length > 0 ? `(${applicationIds.join(",")})` : "()";
+
       const { data, error } = await supabase
         .from("Project")
         .select("*")
-        .eq("owner_id", ownerId)
+        .eq("project_status", "available")
+        .not("project_id", "in", applicationIdsString)
         .order("project_date_created", { ascending: false });
       if (error) throw new Error(error.message);
       setProjects(data);
@@ -48,14 +60,14 @@ export default function YourProjectScreen() {
 
   useEffect(() => {
     if (user?.user_id && isFocused) {
-      getProjects(user.user_id);
+      getProjects();
     }
   }, [user?.user_id, isFocused]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     if (user?.user_id) {
-      await getProjects(user.user_id);
+      await getProjects();
     }
     setRefreshing(false);
   };
@@ -73,7 +85,7 @@ export default function YourProjectScreen() {
       onPress={() => {
         navigation.dispatch(
           CommonActions.navigate({
-            name: "ProjectDetails",
+            name: "ProjectSearchDetails",
             params: { projectId: item.project_id },
           })
         );
@@ -111,16 +123,8 @@ export default function YourProjectScreen() {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text variant="headlineSmall" style={styles.textHeader}>
-          Your Projects
+          Search Projects
         </Text>
-        <Pressable
-          style={styles.button}
-          onPress={() => {
-            navigation.navigate("AddProject" as never);
-          }}
-        >
-          <Text style={styles.buttonText}>Add</Text>
-        </Pressable>
       </View>
       {loading ? (
         <View style={styles.loadingContainer}>

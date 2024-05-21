@@ -114,7 +114,7 @@ export default function EditPortfolio() {
                   isButtonDisabled && styles.disabledButtonText,
                 ]}
               >
-                Update CV
+                Update Portfolio
               </Text>
             </Button>
           </ScrollView>

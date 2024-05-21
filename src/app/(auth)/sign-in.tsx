@@ -1,7 +1,7 @@
 import { Link, Stack } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Image, Alert } from "react-native";
-import { TextInput, Button, Text } from "react-native-paper";
+import { TextInput, Button, Text, Checkbox } from "react-native-paper";
 import { supabase } from "@/lib/supabase";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
@@ -123,15 +123,17 @@ const SignInScreen: React.FC = () => {
         }}
         secureTextEntry={secureTextEntry}
         style={styles.input}
-        right={
-          <TextInput.Icon
-            icon={secureTextEntry ? "eye" : "eye-off"}
-            onPress={toggleSecureEntry}
-          />
-        }
         error={!!passwordError}
       />
       {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
+      <View style={styles.checkboxContainer}>
+        <Checkbox.Android
+          onPress={toggleSecureEntry}
+          testID="Item"
+          status={secureTextEntry ? "unchecked" : "checked"}
+        />
+        <Text style={styles.passwordText}>Show password</Text>
+      </View>
       <Button
         mode="contained"
         onPress={handleLogin}
@@ -179,6 +181,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
     backgroundColor: "white",
+  },
+  checkboxContainer: {
+    flex: 0,
+    flexDirection: "row",
+  },
+  passwordText: {
+    color: "black",
+    fontWeight: "bold",
+    marginTop: 10,
   },
   header: {
     fontSize: 38,

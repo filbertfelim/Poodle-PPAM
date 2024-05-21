@@ -128,22 +128,18 @@ export default function SeekerProjects() {
     </Pressable>
   );
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#471D67" />
+  return (
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text variant="headlineSmall" style={styles.textHeader}>
+          Your Applications
+        </Text>
       </View>
-    );
-  }
-
-  if (applications.length > 0) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text variant="headlineSmall" style={styles.textHeader}>
-            Your Applications
-          </Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#471D67" />
         </View>
+      ) : applications.length > 0 ? (
         <FlatList
           showsVerticalScrollIndicator={false}
           data={applications}
@@ -152,26 +148,17 @@ export default function SeekerProjects() {
           refreshing={refreshing}
           onRefresh={handleRefresh}
         />
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text variant="headlineSmall" style={styles.textHeader}>
-            Your Applications
-          </Text>
-        </View>
+      ) : (
         <View style={styles.bodyContainer}>
           <Text style={styles.noProjects}>
             {
-              "You haven't applied to any projects.\nLet's start explore available projects!"
+              "You haven't applied to any projects.\nLet's start exploring available projects!"
             }
           </Text>
         </View>
-      </View>
-    );
-  }
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

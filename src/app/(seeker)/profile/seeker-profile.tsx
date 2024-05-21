@@ -79,7 +79,7 @@ export default function SeekerProfile() {
               style={styles.actionSection}
               titleStyle={styles.description}
               title="Log out"
-              left={() => <Icon name="exit-to-app" color="#000" size={30} />}
+              left={() => <Icon name="logout" color="#000" size={30} />}
               onPress={showDialog}
             />
           </List.Section>

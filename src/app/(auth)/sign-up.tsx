@@ -1,7 +1,13 @@
 import { Link, Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Image, Alert } from "react-native";
-import { TextInput, Button, RadioButton, Text } from "react-native-paper";
+import {
+  TextInput,
+  Button,
+  RadioButton,
+  Text,
+  Checkbox,
+} from "react-native-paper";
 import { supabase } from "@/lib/supabase";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
@@ -10,7 +16,7 @@ const SignupScreen: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+  const [secureTextEntry, setSecureTextEntry] = useState<boolean>(false);
   const [cvLink, setCvLink] = useState<string>("");
   const [portfolioLink, setPortfolioLink] = useState<string>("");
   const [value, setValue] = React.useState("");
@@ -165,16 +171,17 @@ const SignupScreen: React.FC = () => {
         }}
         secureTextEntry={secureTextEntry}
         style={styles.input}
-        right={
-          <TextInput.Icon
-            icon={secureTextEntry ? "eye" : "eye-off"}
-            onPress={toggleSecureEntry}
-          />
-        }
         error={!!passwordError}
       />
       {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
-      <Text style={styles.subheader}>Choose user type</Text>
+      <View style={styles.checkboxContainer}>
+        <Checkbox.Android
+          onPress={toggleSecureEntry}
+          status={secureTextEntry ? "unchecked" : "checked"}
+        />
+        <Text style={styles.passwordText}>Show password</Text>
+      </View>
+      <Text style={styles.chooseType}>Choose user type</Text>
       <RadioButton.Group
         onValueChange={(value) => setValue(value)}
         value={value}
@@ -265,6 +272,15 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "white",
   },
+  checkboxContainer: {
+    flex: 0,
+    flexDirection: "row",
+  },
+  passwordText: {
+    color: "black",
+    fontWeight: "bold",
+    marginTop: 10,
+  },
   header: {
     fontSize: 38,
     marginBottom: 4,
@@ -279,6 +295,11 @@ const styles = StyleSheet.create({
   subheader: {
     fontSize: 16,
     marginBottom: 10,
+  },
+  chooseType: {
+    fontSize: 16,
+    marginBottom: 10,
+    marginTop: 10,
   },
   iconContainer: {
     marginRight: 10,

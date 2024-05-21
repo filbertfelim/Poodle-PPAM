@@ -8,7 +8,8 @@ import AddBoard from "../(owner)/boards/add-board";
 import KanbanBoard from "../(owner)/boards/kanban-board";
 import AddActivity from "../(owner)/activity/add-activity";
 import EditActivity from "../(owner)/activity/edit-activity";
-import ApplicationDetails from "./project/[application_id]";
+import ApplicationDetails from "./project/application-details";
+import ProjectSearchDetails from "./project/project-details";
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,13 @@ export default function TabLayout() {
         name="ApplicationDetails"
         component={ApplicationDetails}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProjectSearchDetails"
+        component={ProjectSearchDetails}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="EditCV"

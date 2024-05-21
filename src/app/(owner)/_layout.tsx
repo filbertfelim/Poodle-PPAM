@@ -7,7 +7,7 @@ import AddBoard from "./boards/add-board";
 import KanbanBoard from "./boards/kanban-board";
 import AddActivity from "./activity/add-activity";
 import EditActivity from "./activity/edit-activity";
-import ProjectDetails from "./project/[project_id]";
+import ProjectDetails from "./project/project-details";
 import ProjectApplicant from "./project/applicant/[applicant_id]";
 import YourProjectScreen from "./project/your-project";
 
