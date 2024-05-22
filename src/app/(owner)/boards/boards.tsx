@@ -93,7 +93,7 @@ export default function Boards() {
           <Pressable onPress={goBack}>
             <Icon name="chevron-left" color="#471D67" size={30} />
           </Pressable>
-          <Text variant="headlineSmall" style={styles.textHeader}>
+          <Text variant="titleMedium" style={styles.textHeader}>
             {workspaceName}
           </Text>
         </View>
