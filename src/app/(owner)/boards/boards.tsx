@@ -111,26 +111,28 @@ export default function Boards() {
           <Text style={styles.buttonText}>Add</Text>
         </Pressable>
       </View>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#471D67" />
-        </View>
-      ) : boards.length > 0 ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={boards}
-          keyExtractor={(item) => item.board_id.toString()}
-          renderItem={renderItem}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-        />
-      ) : (
-        <View style={styles.bodyContainer}>
-          <Text style={styles.noBoards}>
-            {"You don't have any boards.\nLet's create a new board!"}
-          </Text>
-        </View>
-      )}
+      <View style={styles.contentContainer}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#471D67" />
+          </View>
+        ) : boards.length > 0 ? (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={boards}
+            keyExtractor={(item) => item.board_id.toString()}
+            renderItem={renderItem}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        ) : (
+          <View style={styles.bodyContainer}>
+            <Text style={styles.noBoards}>
+              {"You don't have any boards.\nLet's create a new board!"}
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 25,
+    padding: 18,
   },
   loadingContainer: {
     flex: 1,
@@ -151,19 +153,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 25,
+    marginTop: 32,
     marginBottom: 20,
   },
   headerTitle: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    flex: 1,
   },
   textHeader: {
-    textAlign: "center",
+    textAlign: "left",
     fontFamily: "Inter",
     fontWeight: "bold",
     marginLeft: 15,
+    flexShrink: 1,
   },
   button: {
     borderRadius: 25,
@@ -172,7 +175,7 @@ const styles = StyleSheet.create({
     borderColor: "#471D67",
     paddingHorizontal: 12,
     paddingVertical: 2,
-    justifyContent: "flex-end",
+    marginLeft: 3,
   },
   buttonText: {
     color: "#471D67",
@@ -196,6 +199,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 10,
   },
   noBoards: {
     textAlign: "center",
@@ -214,5 +218,9 @@ const styles = StyleSheet.create({
   boardTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
   },
 });

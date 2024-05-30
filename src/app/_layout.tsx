@@ -53,6 +53,7 @@ function RootLayoutNav() {
       <AuthProvider>
         <PaperProvider>
           <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(owner)" options={{ headerShown: false }} />
             <Stack.Screen name="(seeker)" options={{ headerShown: false }} />
