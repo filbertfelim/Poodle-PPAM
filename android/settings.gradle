@@ -1,4 +1,4 @@
-rootProject.name = 'poodle-ppam'
+rootProject.name = 'Poodle'
 
 dependencyResolutionManagement {
   versionCatalogs {
