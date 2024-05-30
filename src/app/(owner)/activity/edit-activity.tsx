@@ -6,7 +6,14 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import { TextInput, Button, Text, RadioButton } from "react-native-paper";
+import {
+  TextInput,
+  Button,
+  Text,
+  RadioButton,
+  Portal,
+  Dialog,
+} from "react-native-paper";
 import { View } from "@/components/Themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { supabase } from "@/lib/supabase";
@@ -127,6 +134,10 @@ export default function EditActivity() {
     setActivity((prev) => ({ ...prev, [name]: value }));
   };
 
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
+
   const isButtonDisabled = !activity.activityLastName;
 
   async function handleAddActivity() {
@@ -169,6 +180,25 @@ export default function EditActivity() {
       });
     } catch (error) {
       console.error("Failed to edit activity:", error);
+      throw error;
+    }
+  }
+
+  async function handleDelete() {
+    try {
+      const { data, error } = await supabase
+        .from("Activity")
+        .delete()
+        .eq("activity_id", activityId as unknown as number);
+
+      if (error) {
+        const errorMessage = error.message;
+        throw new Error(`Error delete activity: ${errorMessage}`);
+      }
+      console.log("Activity deleted successfully:", data);
+      navigation.goBack();
+    } catch (error) {
+      console.error("Failed to delete activity:", error);
       throw error;
     }
   }
@@ -344,6 +374,50 @@ export default function EditActivity() {
               Update Activity
             </Text>
           </Button>
+          <Button
+            mode="outlined"
+            style={styles.buttonDelete}
+            onPress={showDialog}
+          >
+            <Text style={styles.buttonTextDelete}>Delete Activity</Text>
+          </Button>
+          <Portal>
+            <Dialog
+              visible={visible}
+              onDismiss={hideDialog}
+              style={{
+                backgroundColor: "#F3EDF7",
+                width: "75%",
+                alignItems: "center",
+                alignSelf: "center",
+              }}
+            >
+              <Dialog.Icon icon="delete" size={45} color="red" />
+              <Dialog.Title style={styles.dialogTitle}>
+                Are you sure?
+              </Dialog.Title>
+              <Dialog.Content style={styles.dialogContent}>
+                <Text style={styles.dialogDesc}>
+                  Do you really want to delete this task? This process cannot be
+                  undone.
+                </Text>
+              </Dialog.Content>
+              <Dialog.Actions style={styles.buttonAction}>
+                <Button onPress={hideDialog} style={styles.dialogNoButton}>
+                  <Text style={styles.dialogNo}>Cancel</Text>
+                </Button>
+                <Button
+                  style={styles.dialogYesButton}
+                  onPress={() => {
+                    hideDialog();
+                    handleDelete();
+                  }}
+                >
+                  <Text style={styles.dialogYes}>Delete</Text>
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </ScrollView>
       </View>
     </View>
@@ -387,10 +461,9 @@ const styles = StyleSheet.create({
     height: 150,
   },
   button: {
-    marginTop: 25,
-    borderRadius: 12,
+    marginTop: 40,
+    borderRadius: 20,
     backgroundColor: "#471D67",
-    paddingVertical: 4,
   },
   disabledButton: {
     backgroundColor: "#E6E6E6",
@@ -404,5 +477,51 @@ const styles = StyleSheet.create({
     color: "#A2A2A2",
     fontSize: 16,
     fontWeight: "medium",
+  },
+  buttonDelete: {
+    marginTop: 15,
+    borderRadius: 20,
+    borderColor: "#E62323",
+  },
+  buttonTextDelete: {
+    color: "#E62323",
+    fontSize: 16,
+    fontWeight: "medium",
+  },
+  dialogTitle: {
+    fontFamily: "Inter",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 0,
+  },
+  dialogDesc: {
+    fontFamily: "Inter",
+    fontSize: 13,
+    fontWeight: 400,
+    textAlign: "center",
+    marginBottom: 0,
+  },
+  dialogContent: {
+    marginTop: 10,
+  },
+  dialogYes: {
+    color: "red",
+    fontWeight: "bold",
+  },
+  dialogNo: {
+    color: "#471D67",
+    fontWeight: "bold",
+  },
+  dialogYesButton: {
+    borderRadius: 25,
+    paddingHorizontal: 12,
+  },
+  dialogNoButton: {
+    borderRadius: 25,
+    paddingHorizontal: 12,
+  },
+  buttonAction: {
+    gap: 12,
   },
 });
