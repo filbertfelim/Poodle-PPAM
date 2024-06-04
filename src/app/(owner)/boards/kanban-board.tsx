@@ -28,7 +28,7 @@ interface ActivityInterface {
 }
 
 const screenWidth = Dimensions.get("window").width;
-const columnWidth = screenWidth * 0.9;
+const columnWidth = screenWidth * 0.85;
 const sideMargin = (screenWidth - columnWidth) / 2;
 
 export default function KanbanBoard() {
@@ -212,7 +212,11 @@ export default function KanbanBoard() {
         <View
           style={[
             styles.column,
-            { width: columnWidth, marginHorizontal: sideMargin },
+            {
+              width: columnWidth,
+              marginHorizontal: sideMargin,
+              backgroundColor: "#FBFCFF",
+            },
           ]}
         >
           <View style={styles.columnHeader}>
@@ -223,7 +227,11 @@ export default function KanbanBoard() {
         <View
           style={[
             styles.column,
-            { width: columnWidth, marginHorizontal: sideMargin },
+            {
+              width: columnWidth,
+              marginHorizontal: sideMargin,
+              backgroundColor: "#FBFCFF",
+            },
           ]}
         >
           <View style={styles.columnHeader}>
@@ -234,7 +242,11 @@ export default function KanbanBoard() {
         <View
           style={[
             styles.column,
-            { width: columnWidth, marginHorizontal: sideMargin },
+            {
+              width: columnWidth,
+              marginHorizontal: sideMargin,
+              backgroundColor: "#FBFCFF",
+            },
           ]}
         >
           <View style={styles.columnHeader}>
@@ -259,19 +271,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 50,
     marginBottom: 10,
-    marginHorizontal: 25,
+    marginHorizontal: 18,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#FBFCFF",
+    paddingBottom: 55,
   },
   noDataContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 20,
+    paddingBottom: 55,
   },
   headerTitle: {
     flexDirection: "row",
@@ -285,11 +298,12 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   button: {
-    borderRadius: 25,
+    borderRadius: 20,
     backgroundColor: "#F3EDF7",
     borderWidth: 1,
     borderColor: "#471D67",
     paddingHorizontal: 12,
+    marginRight: 6,
     paddingVertical: 2,
     justifyContent: "flex-end",
   },
@@ -305,41 +319,39 @@ const styles = StyleSheet.create({
   },
   activityScrollView: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   column: {
     flex: 1,
     backgroundColor: "#fff",
     margin: 15,
     borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
     elevation: 2,
   },
   columnHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 13,
+    backgroundColor: "#EFEFEF",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingHorizontal: 22,
+    paddingVertical: 12,
   },
   columnTitle: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
     fontFamily: "Inter",
+    color: "#646464",
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 8,
-    margin: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    borderRadius: 10,
+    marginHorizontal: 22,
+    marginVertical: 10,
+    shadowColor: "transparent",
+    borderColor: "#E6E6E6",
+    borderWidth: 1,
   },
   cardContent: {
     flexDirection: "row",
@@ -352,7 +364,7 @@ const styles = StyleSheet.create({
   },
   columnText: {
     fontFamily: "Inter",
-    fontSize: 24,
+    fontSize: 17,
     fontWeight: 500,
   },
 });

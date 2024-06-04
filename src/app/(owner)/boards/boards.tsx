@@ -93,9 +93,7 @@ export default function Boards() {
           <Pressable onPress={goBack}>
             <Icon name="chevron-left" color="#471D67" size={30} />
           </Pressable>
-          <Text variant="titleMedium" style={styles.textHeader}>
-            {workspaceName}
-          </Text>
+          <Text style={styles.textHeader}>{workspaceName}</Text>
         </View>
         <Pressable
           style={styles.button}
@@ -167,15 +165,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 15,
     flexShrink: 1,
+    fontSize: 20,
   },
   button: {
-    borderRadius: 25,
+    borderRadius: 20,
     backgroundColor: "#F3EDF7",
     borderWidth: 1,
     borderColor: "#471D67",
     paddingHorizontal: 12,
     paddingVertical: 2,
     marginLeft: 3,
+    marginRight: 6,
   },
   buttonText: {
     color: "#471D67",

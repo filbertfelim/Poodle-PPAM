@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, StyleSheet, ScrollView } from "react-native";
+import { View, Pressable, StyleSheet, ScrollView, Linking } from "react-native";
 import { Button, Text, Divider } from "react-native-paper";
 import {
   CommonActions,
@@ -20,6 +20,8 @@ interface ProjectInterface {
   project_status: string;
   project_date_created: string;
   owner_id: string;
+  email: string;
+  name: string;
 }
 
 export default function ProjectSearchDetails() {
@@ -33,10 +35,39 @@ export default function ProjectSearchDetails() {
     try {
       const { data, error } = await supabase
         .from("Project")
-        .select("*")
+        .select(
+          `
+                  project_id,
+                  project_title,
+                  project_desc,
+                  project_deadline,
+                  project_fee,
+                  project_status,
+                  project_date_created,
+                  owner_id,
+                  ProjectOwner (
+                    User (
+                      email,
+                      name
+                    )
+                  )`
+        )
         .eq("project_id", projectId);
       if (error) throw new Error(error.message);
-      setProject(data[0]);
+      const app: any = data[0];
+      const formattedData = {
+        project_id: app.project_id,
+        project_title: app.project_title,
+        project_desc: app.project_desc,
+        project_deadline: app.project_deadline,
+        project_fee: app.project_fee,
+        project_status: app.project_status,
+        project_date_created: app.project_date_created,
+        owner_id: app.owner_id,
+        email: app.ProjectOwner.User.email,
+        name: app.ProjectOwner.User.name,
+      };
+      setProject(formattedData);
     } catch (error) {
       console.error("Error fetching project:", error);
     }
@@ -82,6 +113,10 @@ export default function ProjectSearchDetails() {
       .join(" ");
   };
 
+  const handleEmailPress = (email: string) => {
+    Linking.openURL(`mailto:${email}`);
+  };
+
   if (project) {
     const capitalizedStatus = capitalizeWords(project.project_status);
     const formattedDate = new Date(project.project_deadline).toLocaleDateString(
@@ -124,6 +159,23 @@ export default function ProjectSearchDetails() {
               <Text style={styles.defaultLabel}>IDR</Text>
               <Text style={styles.defaultText}>
                 {project.project_fee.toLocaleString("id-ID")}
+              </Text>
+            </View>
+            <Text style={styles.sectionTitle}>Contact :</Text>
+            <View style={styles.contactWrapper}>
+              <View style={styles.contactDetailWrapper}>
+                <Text style={styles.contactLabel}>Name</Text>
+                <Text style={styles.contactText}>{project.name}</Text>
+              </View>
+              <View style={styles.contactDetailWrapper}>
+                <Text style={styles.contactLabel}>Email</Text>
+                <Pressable onPress={() => handleEmailPress(project.email)}>
+                  <Text style={styles.contactText}>{project.email}</Text>
+                </Pressable>
+              </View>
+              <Text style={styles.note}>
+                * feel free to contact the project owner to ask more about the
+                detail information regarding the project specification
               </Text>
             </View>
           </ScrollView>
@@ -231,5 +283,27 @@ const styles = StyleSheet.create({
     color: "#A2A2A2",
     fontSize: 15,
     fontWeight: "500",
+  },
+  contactWrapper: {
+    flexDirection: "column",
+    marginBottom: 25,
+  },
+  contactDetailWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  contactLabel: {
+    fontSize: 14,
+    color: "#777777",
+  },
+  contactText: {
+    fontSize: 14,
+  },
+  note: {
+    fontSize: 12,
+    color: "#A2A2A2",
+    textAlign: "justify",
   },
 });

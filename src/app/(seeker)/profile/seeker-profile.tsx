@@ -25,6 +25,13 @@ export default function SeekerProfile() {
 
   const hideDialog = () => setVisible(false);
 
+  const capitalizeWords = (sentence: string) => {
+    return sentence
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
 
@@ -42,11 +49,11 @@ export default function SeekerProfile() {
         </Text>
         <ScrollView>
           <View style={styles.avatar}>
-            <Avatar.Icon size={110} icon="account" style={styles.avatarIcon} />
+            <Avatar.Icon size={90} icon="account" style={styles.avatarIcon} />
           </View>
           <View style={styles.userInfoSection}>
             <List.Item
-              title={user.name}
+              title={capitalizeWords(user.name)}
               contentStyle={styles.userInfoSection}
               description={user.email}
               titleStyle={styles.title}
@@ -103,7 +110,7 @@ export default function SeekerProfile() {
                   Are you sure you would like to log out?
                 </Text>
               </Dialog.Content>
-              <Dialog.Actions>
+              <Dialog.Actions style={styles.buttonAction}>
                 <Button onPress={hideDialog} style={styles.dialogButton}>
                   No
                 </Button>
@@ -154,13 +161,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   actionSection: {
-    paddingHorizontal: 10,
+    paddingLeft: 10,
     alignItems: "center",
     fontFamily: "Inter",
     justifyContent: "center",
   },
   title: {
-    fontSize: 26,
+    fontSize: 24,
     marginBottom: 5,
     fontFamily: "Inter",
     fontWeight: "bold",
@@ -168,11 +175,11 @@ const styles = StyleSheet.create({
   },
   description: {
     fontFamily: "Inter",
-    fontSize: 18,
+    fontSize: 16,
   },
   dialogTitle: {
     fontFamily: "Inter",
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 0,
@@ -195,15 +202,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "red",
-    paddingHorizontal: 12,
-    paddingVertical: 2,
+    width: 60,
   },
   dialogButton: {
     borderRadius: 25,
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#471D67",
-    paddingHorizontal: 12,
-    paddingVertical: 2,
+    width: 60,
+  },
+  buttonAction: {
+    gap: 20,
   },
 });
